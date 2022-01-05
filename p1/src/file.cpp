@@ -37,7 +37,7 @@ void process_input(std::vector<int> &a, std::vector<int> &b, int lines) {
 
 
 void lic_p1(std::vector<int> numbers) {
-  int n = numbers.size();
+  long unsigned int n = numbers.size();
   
   if(n < 1) { // base case
     std::cout <<  n << " " << n << newline;
@@ -48,8 +48,8 @@ void lic_p1(std::vector<int> numbers) {
   int longest_subsequence = 1, previous_longest, new_longest; 
 
   // O(N^2) 
-  for(int i = 1; i < n; i++) {
-    for(int j = 0; j < i; j++) {
+  for(std::vector<int>::size_type i = 1; i < n; i++) {
+    for(std::vector<int>::size_type j = 0; j < i; j++) {
       if(numbers[i] > numbers[j]) {                                            
 
         previous_longest = longest_subsequence_at_index[i];
@@ -66,7 +66,6 @@ void lic_p1(std::vector<int> numbers) {
               longest_subsequence = new_longest;
 
             }
-
             longest_subsequence_at_index[i] = new_longest;
             longest_subsequence_counter_at_index[i] = longest_subsequence_counter_at_index[j];
         }
@@ -74,10 +73,10 @@ void lic_p1(std::vector<int> numbers) {
     }
   }
 
-  // number of longest increasing subsequence
+  // number of longest increasing subsequences
   int num_of_lis = 0;
 
-  for(int i = 0; i < n; i++) {
+  for(std::vector<int>::size_type i = 0; i < n; i++) {
     if(longest_subsequence_at_index[i] == longest_subsequence) {
       num_of_lis += longest_subsequence_counter_at_index[i];
     }
@@ -114,7 +113,7 @@ int main() {
       std::vector<int> second_vector;
 
       process_input(first_vector, second_vector, command);
-      lcis_p2(first_vector,second_vector); 
+     // lcis_p2(first_vector,second_vector); 
     } else {
       std::cout << "An error has occurred, try again with different values" << newline;
     }
