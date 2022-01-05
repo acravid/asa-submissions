@@ -161,7 +161,7 @@ int main() {
       std::vector<int> second_vector;
 
       process_input(first_vector, second_vector, command);
-     // lcis_p2(first_vector,second_vector); 
+      lcis_p2(first_vector,second_vector); 
     } else {
       std::cout << "An error has occurred, try again with different values" << newline;
     }
