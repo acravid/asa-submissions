@@ -34,7 +34,7 @@ void process_input(std::vector<int> &a, std::vector<int> &b, int lines) {
 }
 
 
-void lic_p1(std::vector<int> numbers) {
+void lic_p1(std::vector<int> &numbers) {
   long unsigned int n = numbers.size();
   
   if(n < 1) { // base case
@@ -84,7 +84,7 @@ void lic_p1(std::vector<int> numbers) {
 }
 
 
-void lcis_p2(std::vector<int> first_line, std::vector<int> second_line) {
+void lcis_p2(std::vector<int> &first_line, std::vector<int> &second_line) {
 
   long unsigned int len_1 = first_line.size();
   long unsigned int len_2 = second_line.size();
