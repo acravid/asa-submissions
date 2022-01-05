@@ -3,13 +3,11 @@
 #include <string>
 #include <sstream>
 #include <unordered_map>
-//#include <algorithm>
+
 
 #define P1 1
 #define P2 2
 #define newline "\n"
-
-
 
 
 void process_input(std::vector<int> &a, std::vector<int> &b, int lines) {
@@ -86,7 +84,57 @@ void lic_p1(std::vector<int> numbers) {
 }
 
 
+void lcis_p2(std::vector<int> first_line, std::vector<int> second_line) {
 
+  long unsigned int len_1 = first_line.size();
+  long unsigned int len_2 = second_line.size();
+
+
+  // a small example to verify the correctness
+  // first_line -> <2, 1, 2, 2>
+  // second_line -> <2, 2, 1, 2> , during the I/O phase we pushed to the second vector only elements that
+  // already exist in the first (1)
+
+  // this vector will store the length of 
+  // longest common increasing subsequence known so far at k-th index
+  // the longest possible length is given by the second vector, see (1)
+  std::vector<int> LCIS(len_2,0);
+
+
+  // iterate over elements in the first vector
+  for(std::vector<int>::size_type i = 0 ; i != len_1; i++) {
+    int curr_lcis = 0;
+    // for each element in the first vector we iterate through all elements in the second
+    for(std::vector<int>::size_type j = 0; j !=  len_2; j++) {
+      
+      // Check if the common condition is met LC (Longest Common)
+      if(first_line[i] == second_line[j]) { // if we have the following vector < 5,5,5,5> we have 4 increasing subsequences of length 1 each
+        // if the current length at j-th index is smaller than the current plus 1
+        if(curr_lcis + 1 > LCIS[j]) { 
+          LCIS[j] = curr_lcis + 1; // we update its length  
+
+        } 
+      }
+      // Check for a increasing subsequence 
+      if(first_line[i] > second_line[j]) {
+        if(LCIS[j] > curr_lcis) { // if the LCIS at j-th index is bigger than the current
+          // there's previous element in the first subsequence that is common to the second
+          curr_lcis = LCIS[j]; // if so update the counter for the length 
+        }
+
+      }
+    }
+  }
+  // the maximum value in LCIS is our answer
+  int res = 0;
+  for(std::vector<int>:: size_type i = 0; i != len_2; i++) {
+    if(LCIS[i] > res) {
+      res = LCIS[i];
+    }
+  }
+
+  std::cout << res << newline; 
+}
 
 
 int main() {
@@ -120,5 +168,3 @@ int main() {
       
     return 0;
 }
-
-
