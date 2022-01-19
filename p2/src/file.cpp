@@ -5,83 +5,93 @@
 
 #define newline "\n"
 
+
 class Graph
 {
 private:
-    // v1 nd v2, vertices we want to calculate the closest common ancestor
-    int v_1;
-    int v_2;
-    int n; // number of vertices
-    int m; // number of edges
+    
+    uint v_1;
+    uint v_2;
+    uint n; // number of vertices
+    uint m; // number of edges
 
     // adjacency list 
-    std::vector<std::vector<int> > adj;
+    std::vector<int> *adjacency;
+
 public:
-    Graph(int vert_1, int vert_2, int total_vertices, int total_edges, std::vector<std::vector<int> > &adjacency):
+
+    Graph(uint vert_1, uint vert_2, uint total_vertices, uint total_edges):
         v_1(vert_1),
         v_2(vert_2),
         n(total_vertices),
-        m(total_edges),
-        adj(total_vertices)
+        m(total_edges)
         {};
         
     // default constructor
     Graph(): n(0), m(0) {};
 
-    int getNumVertices() const { return n; };
-    int getNumberEdges() const { return m; };
-    int getVerticeOne() const { return v_1; };
-    int getVerticeTwo() const { return v_2; };
+    uint getNumVertices() { return n; };
+    uint getNumberEdges() { return m; };
+    uint getVerticeOne()  { return v_1; };
+    uint getVerticeTwo()  { return v_2; };
     
-    // gets the adjacency list
-    const std::vector<std::vector<int>> getAdjacencyList() { return adj; };
-
-    void printAdjacencyList() {};
-
-
-    void addVertice() {
-
-    };
-    void addEdge(int a, int b) {
-
+    void setAdjacencyList(std::vector<int> a, int n) {
+        
     };
 
+    void printAdjacencyList(int k) {
+
+        std::vector<int>::iterator it;
+        for (int i = 0; i < k ; ++i) { 
+            std::cout << "\n adjacency list of vertex "
+             << i + 1 << "\n head ";
+        }
+        for (it= adjacency[k].begin();it!= adjacency[k].end(); it++) 
+           std::cout << " -->" << *it; 
+        std::cout << newline;
+    };
 
 
 };
 
-Graph process_input(Graph g) {
+Graph process_input() {
     
     uint v1, v2;
     uint n, m;   
 
-    // process the first two lines
-    std::cin >> v1 >> v2;
-    std::cin >> n >> m;
+    std::cin >> v1 >> v2; // reads the two vertices, we want to find all the LCA
+    std::cin >> n >> m; // reads number of vertices and edges
 
+    // array of vectors, of length N, each of which is empty initially.
+    std::vector<int> adj[n];
 
-    // n total vertices, hence the adjacency list will have n placeholders for the n vertices
-    std::vector<std::vector<int> > adj(n, std::vector<int>());
-
-    // we now have to process m lines (the total number of edges)
-    
-    for(uint i = 0; i < m; i++) {
-        uint x, y;
+    for(uint i = 0; i < m; i++) { // process the m edges
+        uint x, y; // where y is a child of x
         std::cin >> x >> y;
-        //adj[x-1]
+        x--; // a zero indexed vector
+        adj[x].push_back(y);
+        
     }
 
+    Graph g = Graph(v1,v2,n,m);
+    //g.setAdjacencyList(adj,n);
+    //g.printAdjacencyList(n);
+
+    //std::cout << newline;
+    //printAdjacencyListF(adj,n);
+
+
+   
+   
+    
     return g;
 }
 
 
 int main() {
     
-    Graph g;
-    g = process_input(g);
+    Graph g = process_input();
+    
 
-
-
-
+    return 0;
 }
-
