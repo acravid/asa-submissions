@@ -1,10 +1,9 @@
 #include <iostream>
 #include <algorithm>
-#include <sstream>
+
 #include <vector>
 
 #define newline "\n"
-
 
 class Graph
 {
@@ -15,43 +14,34 @@ private:
     uint n; // number of vertices
     uint m; // number of edges
 
-    // adjacency list 
-    std::vector<int> *adjacency;
+    std::vector<std::vector<int>> adjacency_list;
 
 public:
-
-    Graph(uint vert_1, uint vert_2, uint total_vertices, uint total_edges):
+                                                                                        // && an r-value reference
+    Graph(uint vert_1, uint vert_2, uint total_vertices, uint total_edges,std::vector<std::vector<int>> &&adj):
         v_1(vert_1),
         v_2(vert_2),
         n(total_vertices),
-        m(total_edges)
+        m(total_edges),
+        adjacency_list(std::move(adj))
         {};
         
-    // default constructor
-    Graph(): n(0), m(0) {};
-
     uint getNumVertices() { return n; };
     uint getNumberEdges() { return m; };
     uint getVerticeOne()  { return v_1; };
     uint getVerticeTwo()  { return v_2; };
-    
-    void setAdjacencyList(std::vector<int> a, int n) {
-        
-    };
 
-    void printAdjacencyList(int k) {
 
-        std::vector<int>::iterator it;
-        for (int i = 0; i < k ; ++i) { 
-            std::cout << "\n adjacency list of vertex "
-             << i + 1 << "\n head ";
+    void printAdjacencyList() {
+        for(std::vector<std::vector<int>>::iterator row = adjacency_list.begin(); row != adjacency_list.end(); ++row ) {
+            std::cout << (row- adjacency_list.begin() + 1)<< "--> " ;
+            for(std::vector<int>::iterator col = row->begin();col != row->end(); ++col ){
+                std::cout << " " << *col  ; 
+            }
+            std::cout << newline;
         }
-        for (it= adjacency[k].begin();it!= adjacency[k].end(); it++) 
-           std::cout << " -->" << *it; 
-        std::cout << newline;
     };
-
-
+    
 };
 
 Graph process_input() {
@@ -59,39 +49,52 @@ Graph process_input() {
     uint v1, v2;
     uint n, m;   
 
-    std::cin >> v1 >> v2; // reads the two vertices, we want to find all the LCA
-    std::cin >> n >> m; // reads number of vertices and edges
+    std::cin >> v1 >> v2;
+    std::cin >> n >> m;
 
-    // array of vectors, of length N, each of which is empty initially.
-    std::vector<int> adj[n];
+    std::vector<std::vector<int>> adj_list;
+    
 
     for(uint i = 0; i < m; i++) { // process the m edges
         uint x, y; // where y is a child of x
         std::cin >> x >> y;
         x--; // a zero indexed vector
-        adj[x].push_back(y);
-        
+        adj_list.push_back(std::vector<int>());
+        adj_list[x].push_back(y);
     }
 
-    Graph g = Graph(v1,v2,n,m);
-    //g.setAdjacencyList(adj,n);
-    //g.printAdjacencyList(n);
+     for(std::vector<std::vector<int>>::iterator row = adj_list.begin(); row != adj_list.end(); ++row ) {
+        std::cout << (row- adj_list.begin() + 1)<< "--> " ;
+        for(std::vector<int>::iterator col = row->begin();col != row->end(); ++col ){
+            std::cout << " " << *col  ; 
+        }
+        std::cout << newline;
+    }
 
-    //std::cout << newline;
-    //printAdjacencyListF(adj,n);
+ 
+    Graph g(v1,v2,n,m,std::move(adj_list));
 
-
-   
-   
     
+
+    std::cout << "DATA: ";
+    std::cout << g.getNumberEdges();
+    std::cout << g.getNumVertices();
+    std::cout << g.getVerticeOne();
+    std::cout << g.getVerticeTwo();
+
+    std::cout << newline;
+    std::cout << newline;
+
+    g.printAdjacencyList();
+
     return g;
-}
+
 
 
 int main() {
     
     Graph g = process_input();
-    
+    process_input();
 
     return 0;
 }
