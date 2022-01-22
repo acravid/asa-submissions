@@ -11,8 +11,8 @@ private:
     
     uint v_1;
     uint v_2;
-    uint n; // number of vertices
-    uint m; // number of edges
+    uint n;
+    uint m;
 
     std::vector<std::vector<int>> adjacency_list;
 
@@ -62,39 +62,16 @@ Graph process_input() {
         adj_list.push_back(std::vector<int>());
         adj_list[x].push_back(y);
     }
-
-     for(std::vector<std::vector<int>>::iterator row = adj_list.begin(); row != adj_list.end(); ++row ) {
-        std::cout << (row- adj_list.begin() + 1)<< "--> " ;
-        for(std::vector<int>::iterator col = row->begin();col != row->end(); ++col ){
-            std::cout << " " << *col  ; 
-        }
-        std::cout << newline;
-    }
-
  
     Graph g(v1,v2,n,m,std::move(adj_list));
 
-    
-
-    std::cout << "DATA: ";
-    std::cout << g.getNumberEdges();
-    std::cout << g.getNumVertices();
-    std::cout << g.getVerticeOne();
-    std::cout << g.getVerticeTwo();
-
-    std::cout << newline;
-    std::cout << newline;
-
-    g.printAdjacencyList();
-
     return g;
 
+}
 
 
 int main() {
     
     Graph g = process_input();
-    process_input();
-
     return 0;
 }
