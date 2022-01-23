@@ -51,6 +51,7 @@ public:
 
 
     bool dfsMarker(uint v) {
+
         color[v] = 1;
         for(uint u: adjacency_list[v]) {
             u--; // zero indexed vector
@@ -70,10 +71,9 @@ public:
 
     bool dfsAcyclic() {
 
-        color.assign(n,0); // initialize all vertices to 0 (white- marker)
+        color.assign(n,0); 
         parent.assign(n,-1);
         setStart(-1);
-        
         for (uint i = 0; i < n ; i++) {
             if (color[i] == 0 && dfsMarker(i)) {
                 break;
@@ -83,6 +83,21 @@ public:
             return true; // acyclic
         }
         return false;
+    };
+
+    bool validIndegree() {
+  
+        indegree.assign(n,0);       
+        for(uint i = 0; i < n ; i++) {
+            for(uint u: adjacency_list[i]) {
+                u--;
+                indegree[u]++;
+                if(indegree[u] >= 3) { 
+                    return false;
+                }
+            }
+        }
+        return true;
     };
 
 };
@@ -121,11 +136,10 @@ int main() {
 
     Graph g = process_input();
 
-    if(g.dfsAcyclic()) {
-        // algoritmo para descobrir LCA
-       std::cout << "ALL GOOD" << newline;
-    } else {
+    if(!g.dfsAcyclic() || !g.validIndegree()) {
         invalidGenealogyTree();
+    } else {
+        std::cout << "all good" << newline;
     }
 
     return 0;
