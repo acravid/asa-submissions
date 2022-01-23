@@ -1,6 +1,5 @@
 #include <iostream>
 #include <algorithm>
-
 #include <vector>
 
 #define newline "\n"
@@ -11,9 +10,12 @@ private:
     
     uint v_1;
     uint v_2;
-    uint n;
-    uint m;
-
+    uint n; // number of vertices
+    uint m; // number of edges
+    int start, end;
+    std::vector<char> color;
+    std::vector<int> parent;
+    std::vector<int> indegree;
     std::vector<std::vector<int>> adjacency_list;
 
 public:
@@ -30,18 +32,59 @@ public:
     uint getNumberEdges() { return m; };
     uint getVerticeOne()  { return v_1; };
     uint getVerticeTwo()  { return v_2; };
-
+    
+    uint getStart() { return start; };
+    uint getENd() { return end; };
+    void setStart(int v) { start = v; };
+    void setEnd(int v) { end = v; };
 
     void printAdjacencyList() {
+
         for(std::vector<std::vector<int>>::iterator row = adjacency_list.begin(); row != adjacency_list.end(); ++row ) {
             std::cout << (row- adjacency_list.begin() + 1)<< "--> " ;
-            for(std::vector<int>::iterator col = row->begin();col != row->end(); ++col ){
+            for(std::vector<int>::iterator col = row->begin();col != row->end(); ++col ){   
                 std::cout << " " << *col  ; 
             }
             std::cout << newline;
         }
     };
-    
+
+
+    bool dfsMarker(uint v) {
+        color[v] = 1;
+        for(uint u: adjacency_list[v]) {
+            u--; // zero indexed vector
+            if (color[u] == 0) {
+                parent[u] = v;
+                if (dfsMarker(u))
+                    return true;
+            } else if (color[u] == 1) {
+                setStart(u);
+                return true;
+            }
+        }
+        color[v] = 2;
+        return false;
+
+    };
+
+    bool dfsAcyclic() {
+
+        color.assign(n,0); // initialize all vertices to 0 (white- marker)
+        parent.assign(n,-1);
+        setStart(-1);
+        
+        for (uint i = 0; i < n ; i++) {
+            if (color[i] == 0 && dfsMarker(i)) {
+                break;
+            }
+        }
+        if (start == -1) {
+            return true; // acyclic
+        }
+        return false;
+    };
+
 };
 
 Graph process_input() {
@@ -52,7 +95,7 @@ Graph process_input() {
     std::cin >> v1 >> v2;
     std::cin >> n >> m;
 
-    std::vector<std::vector<int>> adj_list;
+    std::vector<std::vector<int>> adj_list(n);
     
 
     for(uint i = 0; i < m; i++) { // process the m edges
@@ -69,9 +112,21 @@ Graph process_input() {
 
 }
 
+void invalidGenealogyTree() { std::cout << "0" << newline; } 
 
 int main() {
-    
+
+    std::ios::sync_with_stdio(false);
+    std::cin.tie(0);
+
     Graph g = process_input();
+
+    if(g.dfsAcyclic()) {
+        // algoritmo para descobrir LCA
+       std::cout << "ALL GOOD" << newline;
+    } else {
+        invalidGenealogyTree();
+    }
+
     return 0;
 }
