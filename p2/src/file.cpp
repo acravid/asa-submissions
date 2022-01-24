@@ -1,8 +1,10 @@
 #include <iostream>
-#include <algorithm>
 #include <vector>
 
 #define newline "\n"
+#define WHITE 0
+#define GRAY 1
+#define BLACK 2
 
 class Graph
 {
@@ -52,30 +54,30 @@ public:
 
     bool dfsMarker(uint v) {
 
-        color[v] = 1;
+        color[v] = GRAY;
         for(uint u: adjacency_list[v]) {
             u--; // zero indexed vector
-            if (color[u] == 0) {
+            if (color[u] == WHITE) {
                 parent[u] = v;
                 if (dfsMarker(u))
                     return true;
-            } else if (color[u] == 1) {
+            } else if (color[u] == GRAY) {
                 setStart(u);
                 return true;
             }
         }
-        color[v] = 2;
+        color[v] = BLACK;
         return false;
 
     };
 
     bool dfsAcyclic() {
 
-        color.assign(n,0); 
+        color.assign(n,WHITE); 
         parent.assign(n,-1);
         setStart(-1);
         for (uint i = 0; i < n ; i++) {
-            if (color[i] == 0 && dfsMarker(i)) {
+            if (color[i] == WHITE && dfsMarker(i)) {
                 break;
             }
         }
@@ -100,6 +102,66 @@ public:
         return true;
     };
 
+  
+    void printIndegrees() {
+
+        for(uint i = 0; i < n ; i++) {
+            std::cout << indegree[i] << newline;
+        }
+    };
+
+    void dfs(uint v, std::vector<std::vector<int>> &parents) {
+        
+        color[v] = GRAY;
+        for (int u : adjacency_list[v]) {
+            u--;
+            parents[u].push_back(v);
+            if (color[u] == WHITE)
+                dfs(u,parents);
+        }
+        color[v] = BLACK;
+
+    };
+
+
+    void allCommonAncestor() {
+        
+        std::vector<std::vector<int>> parents;
+
+        for(uint i = 0; i < n; i++) {
+            if(color[i] == WHITE) {
+                dfs(i,parents);
+            }
+            
+        }
+
+       // std::vector<int> parents_v1 = parents[954];
+
+        std::cout << "aqui" << newline;
+        std::cout << "yep let go" << newline;
+
+
+        // all vertices are already marked as white (see dfs_marker)
+
+        // dfs  getVerticeOne();
+       
+        // dfs getVerticeTwo()
+
+        // get the vector position verticeone -1 
+        // get the vector position verticetwo -1   
+        // sort the elements at both vector
+        // size == 0 ? "-"
+        // size != 0 -> intersection and loop 
+
+
+
+
+    };
+   
+
+   
+
+
 };
 
 Graph process_input() {
@@ -112,12 +174,11 @@ Graph process_input() {
 
     std::vector<std::vector<int>> adj_list(n);
     
-
-    for(uint i = 0; i < m; i++) { // process the m edges
-        uint x, y; // where y is a child of x
+    // process the m edges
+    for(uint i = 0; i < m; i++) { 
+        uint x, y; 
         std::cin >> x >> y;
-        x--; // a zero indexed vector
-        adj_list.push_back(std::vector<int>());
+        x--;
         adj_list[x].push_back(y);
     }
  
@@ -132,7 +193,7 @@ void invalidGenealogyTree() { std::cout << "0" << newline; }
 int main() {
 
     std::ios::sync_with_stdio(false);
-    std::cin.tie(0);
+    std::cin.tie(NULL);
 
     Graph g = process_input();
 
@@ -140,6 +201,7 @@ int main() {
         invalidGenealogyTree();
     } else {
         std::cout << "all good" << newline;
+        g.allCommonAncestor();
     }
 
     return 0;
