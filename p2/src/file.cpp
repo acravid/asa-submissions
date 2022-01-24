@@ -1,10 +1,13 @@
 #include <iostream>
 #include <vector>
+#include <queue>
 
 #define newline "\n"
 #define WHITE 0
 #define GRAY 1
 #define BLACK 2
+#define GREEN 3
+#define ORANGE 4
 
 class Graph
 {
@@ -16,18 +19,19 @@ private:
     uint m; // number of edges
     int start, end;
     std::vector<char> color;
-    std::vector<int> parent;
     std::vector<int> indegree;
     std::vector<std::vector<int>> adjacency_list;
-
+    std::vector<std::vector<int>> transpose;
+    std::vector<int> counter;
 public:
                                                                                         // && an r-value reference
-    Graph(uint vert_1, uint vert_2, uint total_vertices, uint total_edges,std::vector<std::vector<int>> &&adj):
+    Graph(uint vert_1, uint vert_2, uint total_vertices, uint total_edges,std::vector<std::vector<int>> &&adj,std::vector<std::vector<int>> &&transp):
         v_1(vert_1),
         v_2(vert_2),
         n(total_vertices),
         m(total_edges),
-        adjacency_list(std::move(adj))
+        adjacency_list(std::move(adj)),
+        transpose(std::move(transp))
         {};
         
     uint getNumVertices() { return n; };
@@ -51,6 +55,17 @@ public:
         }
     };
 
+        void printTransposeList() {
+
+        for(std::vector<std::vector<int>>::iterator row = transpose.begin(); row != transpose.end(); ++row ) {
+            std::cout << (row- transpose.begin() + 1)<< "--> " ;
+            for(std::vector<int>::iterator col = row->begin();col != row->end(); ++col ){   
+                std::cout << " " << *col  ; 
+            }
+            std::cout << newline;
+        }
+    };
+
 
     bool dfsMarker(uint v) {
 
@@ -58,7 +73,6 @@ public:
         for(uint u: adjacency_list[v]) {
             u--; // zero indexed vector
             if (color[u] == WHITE) {
-                parent[u] = v;
                 if (dfsMarker(u))
                     return true;
             } else if (color[u] == GRAY) {
@@ -71,10 +85,10 @@ public:
 
     };
 
+ 
     bool dfsAcyclic() {
-
+        
         color.assign(n,WHITE); 
-        parent.assign(n,-1);
         setStart(-1);
         for (uint i = 0; i < n ; i++) {
             if (color[i] == WHITE && dfsMarker(i)) {
@@ -88,7 +102,7 @@ public:
     };
 
     bool validIndegree() {
-  
+
         indegree.assign(n,0);       
         for(uint i = 0; i < n ; i++) {
             for(uint u: adjacency_list[i]) {
@@ -100,8 +114,8 @@ public:
             }
         }
         return true;
-    };
 
+    };
   
     void printIndegrees() {
 
@@ -110,59 +124,35 @@ public:
         }
     };
 
-    void dfs(uint v, std::vector<std::vector<int>> &parents) {
-        
-        color[v] = GRAY;
-        for (int u : adjacency_list[v]) {
-            u--;
-            parents[u].push_back(v);
-            if (color[u] == WHITE)
-                dfs(u,parents);
-        }
-        color[v] = BLACK;
+    // mode - 0 -> dfs v1
+    void dfsSolver(uint v,uint mode) {
 
+    
     };
-
 
     void allCommonAncestor() {
-        
-        std::vector<std::vector<int>> parents;
+
+        // color.assign(n,WHITE)
+        //all vertices are already marked as white (see dfs_Acyclic)
+        counter.assign(n,0);
+
+     
+
+
+        dfsSolver(getVerticeOne(),0);
+        dfsSolver(getVerticeTwo(),1);
+
 
         for(uint i = 0; i < n; i++) {
-            if(color[i] == WHITE) {
-                dfs(i,parents);
+            if(counter[i] == 0) {
+                std::cout << i <<  " -->" << counter[i] << " ";
             }
-            
+        
         }
-
-       // std::vector<int> parents_v1 = parents[954];
-
-        std::cout << "aqui" << newline;
-        std::cout << "yep let go" << newline;
-
-
-        // all vertices are already marked as white (see dfs_marker)
-
-        // dfs  getVerticeOne();
-       
-        // dfs getVerticeTwo()
-
-        // get the vector position verticeone -1 
-        // get the vector position verticetwo -1   
-        // sort the elements at both vector
-        // size == 0 ? "-"
-        // size != 0 -> intersection and loop 
-
-
-
-
     };
    
-
-   
-
-
 };
+
 
 Graph process_input() {
     
@@ -173,6 +163,7 @@ Graph process_input() {
     std::cin >> n >> m;
 
     std::vector<std::vector<int>> adj_list(n);
+    std::vector<std::vector<int>> transpose(n);
     
     // process the m edges
     for(uint i = 0; i < m; i++) { 
@@ -180,9 +171,11 @@ Graph process_input() {
         std::cin >> x >> y;
         x--;
         adj_list[x].push_back(y);
+        x++,y--;
+        transpose[y].push_back(x);
     }
  
-    Graph g(v1,v2,n,m,std::move(adj_list));
+    Graph g(v1,v2,n,m,std::move(adj_list),std::move(transpose));
 
     return g;
 
