@@ -1,13 +1,14 @@
 #include <iostream>
 #include <vector>
-#include <queue>
+#include <set>
 
 #define newline "\n"
+#define whitespace " "
 #define WHITE 0
 #define GRAY 1
 #define BLACK 2
-#define GREEN 3
-#define ORANGE 4
+#define ORANGE 3
+#define RED 4
 
 class Graph
 {
@@ -17,12 +18,15 @@ private:
     uint v_2;
     uint n; // number of vertices
     uint m; // number of edges
-    int start, end;
+    int start;
     std::vector<char> color;
+    std::vector<int> color_2;
     std::vector<int> indegree;
+    std::vector<bool> visited;
     std::vector<std::vector<int>> adjacency_list;
     std::vector<std::vector<int>> transpose;
-    std::vector<int> counter;
+    std::set<int,std::less<int>> res;
+    
 public:
                                                                                         // && an r-value reference
     Graph(uint vert_1, uint vert_2, uint total_vertices, uint total_edges,std::vector<std::vector<int>> &&adj,std::vector<std::vector<int>> &&transp):
@@ -40,10 +44,8 @@ public:
     uint getVerticeTwo()  { return v_2; };
     
     uint getStart() { return start; };
-    uint getENd() { return end; };
     void setStart(int v) { start = v; };
-    void setEnd(int v) { end = v; };
-
+    
     void printAdjacencyList() {
 
         for(std::vector<std::vector<int>>::iterator row = adjacency_list.begin(); row != adjacency_list.end(); ++row ) {
@@ -55,7 +57,7 @@ public:
         }
     };
 
-        void printTransposeList() {
+    void printTransposeList() {
 
         for(std::vector<std::vector<int>>::iterator row = transpose.begin(); row != transpose.end(); ++row ) {
             std::cout << (row- transpose.begin() + 1)<< "--> " ;
@@ -65,7 +67,6 @@ public:
             std::cout << newline;
         }
     };
-
 
     bool dfsMarker(uint v) {
 
@@ -85,7 +86,6 @@ public:
 
     };
 
- 
     bool dfsAcyclic() {
         
         color.assign(n,WHITE); 
@@ -96,7 +96,7 @@ public:
             }
         }
         if (start == -1) {
-            return true; // acyclic
+            return true; 
         }
         return false;
     };
@@ -123,33 +123,90 @@ public:
             std::cout << indegree[i] << newline;
         }
     };
-
-    // mode - 0 -> dfs v1
-    void dfsSolver(uint v,uint mode) {
-
     
+    void dfsV2(uint v ) {
+
+        if(color_2[v] == WHITE) {
+            color_2[v] = GRAY;
+            for(uint u: transpose[v]) {
+                u--;
+                if(color_2[u] == WHITE) 
+                    dfsV2(u);
+                else if(color_2[u] == BLACK) {
+
+                    // TO FIX
+
+                    std::vector<int> temp = adjacency_list[u];
+                    color_2[u] = ORANGE;
+                    u++; // valor real não index
+                    for(uint i: temp) {
+                        if(res.count(i) == 0){
+                            // does nothing.
+                        }
+
+                    }
+                    res.insert(u);
+                    u--;
+                    std::vector<int> temp = adjacency_list[u];
+                    for(uint i: temp) {
+                        if(res.count(i) == 0){
+                            // does nothing; 
+                        } else {
+                        
+                            u++;
+                            for(std::set<int>::iterator it = res.begin(); it != res.end(); ) {
+                                if((uint)*it == u)
+                                    res.erase(u);
+                            }
+                        }
+                    }
+
+                }
+            }
+            color_2[v] = RED;
+        } 
+    };
+
+    void dfsV1(uint v) {
+        color_2[v] = GRAY;
+
+        for(uint u: transpose[v]) {
+            u--;
+            if(color_2[u] == WHITE) {
+                dfsV1(u);
+            } 
+        }
+        color_2[v] = BLACK; 
     };
 
     void allCommonAncestor() {
 
-        // color.assign(n,WHITE)
         //all vertices are already marked as white (see dfs_Acyclic)
-        counter.assign(n,0);
-
-     
-
-
-        dfsSolver(getVerticeOne(),0);
-        dfsSolver(getVerticeTwo(),1);
-
-
-        for(uint i = 0; i < n; i++) {
-            if(counter[i] == 0) {
-                std::cout << i <<  " -->" << counter[i] << " ";
-            }
+        color_2.assign(n,WHITE);
+        uint v1 = getVerticeOne() - 1;
+        uint v2 = getVerticeTwo() - 1;
+      
         
+        // perform a DFS on v1
+        dfsV1(v1);
+
+        // check if v1 has already passed the other
+        if(color_2[v2] == BLACK)  {
+            std::cout << getVerticeTwo() << whitespace;
+        } else {
+            std::cout << "aqui" ;
+            dfsV2(v2);
+            if(res.empty()){
+                std::cout << "-" << newline; 
+            } else {
+                for(std::set<int>::iterator i = res.begin(); i != res.end(); i++)
+                    std::cout << *i << whitespace;    
+            }
         }
+
     };
+
+    void invalidGenealogyTree() { std::cout << "0" << newline; } 
    
 };
 
@@ -181,7 +238,6 @@ Graph process_input() {
 
 }
 
-void invalidGenealogyTree() { std::cout << "0" << newline; } 
 
 int main() {
 
@@ -191,9 +247,8 @@ int main() {
     Graph g = process_input();
 
     if(!g.dfsAcyclic() || !g.validIndegree()) {
-        invalidGenealogyTree();
+        g.invalidGenealogyTree();
     } else {
-        std::cout << "all good" << newline;
         g.allCommonAncestor();
     }
 
