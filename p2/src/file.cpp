@@ -78,7 +78,10 @@ public:
             } else if (color[u] == GRAY) {
                 setStart(u);
                 return true;
-            } 
+            } else if((v+1) == (u+1)) {
+                setStart(2);
+                return true;
+            }
         }
         color[v] = BLACK;
         return false;
@@ -100,7 +103,7 @@ public:
         return false;
     };
 
-    bool validIndegree() {
+    bool validIndegree(uint flag) {
 
         indegree.assign(n,0);       
         for(uint i = 0; i < n ; i++) {
@@ -111,8 +114,9 @@ public:
                     return false;
                 }
             }
+            
         }
-        return true;
+        return true; 
 
     };
   
@@ -123,33 +127,40 @@ public:
         }
     };
     
-    void dfsV2(uint v, uint add ) {
+    void dfsV2(uint v, uint remove) {
 
         if(color_2[v] == WHITE) {
             color_2[v] = GRAY;
             for(uint u: transpose[v]) {
                 u--;
                 if(color_2[u] == WHITE) 
-                    dfsV2(u,add);
+                    dfsV2(u,remove);
                 else if(color_2[u] == BLACK) {
+                    
+                    color_2[u] = ORANGE;
+                    u++;
+                    res.insert(u);
 
-                    std::vector<int> adj = adjacency_list[u];
-                    for(uint i: adj) {
-                        if(res.count(i) != 0) {
-                            add = 0;
+                    std::set<int>::iterator it;
+                    std::vector<int> adj;
+                    for (it = res.begin(); it != res.end(); ++it) {
+                        adj = adjacency_list[(*it-1)];
+                        for(uint i: adj) {
+                            if(res.count(i) == 1) {
+                                res.erase((*it));
+                                remove = 1;
+                                break;
+                            }
+                        }
+                        if(remove) {
                             break;
-                        } 
-                        add = 1;    
-                    }
-                    if(add) {
-                        color_2[u] = ORANGE;
-                        u++;
-                        res.insert(u);
-                    }
+                        }
+                    }      
                 }
             }
             color_2[v] = RED;
         }
+       
 
     };
 
@@ -174,10 +185,13 @@ public:
     
         dfsV1(v1);
 
+
         if(color_2[v2] == BLACK)  {
             std::cout << getVerticeTwo() << whitespace << newline;
-        } else {
-            dfsV2(v2,1);
+        } 
+        else {
+            dfsV2(v2,0);
+    
             if(res.empty()){
                 std::cout << "-" << newline; 
             } else {
@@ -189,7 +203,7 @@ public:
 
     };
 
-    void invalidGenealogyTree() { std::cout << "0" << newline; } 
+    void invalidGenealogyTree() { std::cout << "0" << newline; }; 
    
 };
 
@@ -228,7 +242,7 @@ int main() {
 
     Graph g = process_input();
 
-    if(!g.dfsAcyclic() || !g.validIndegree()) {
+    if(!g.dfsAcyclic() || !g.validIndegree(0)) {
         g.invalidGenealogyTree();
     } else {
         g.allCommonAncestor();
