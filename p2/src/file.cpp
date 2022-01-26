@@ -16,13 +16,12 @@ private:
     
     uint v_1;
     uint v_2;
-    uint n; // number of vertices
-    uint m; // number of edges
+    uint n; 
+    uint m;
     int start;
     std::vector<char> color;
     std::vector<int> color_2;
     std::vector<int> indegree;
-    std::vector<bool> visited;
     std::vector<std::vector<int>> adjacency_list;
     std::vector<std::vector<int>> transpose;
     std::set<int,std::less<int>> res;
@@ -79,7 +78,7 @@ public:
             } else if (color[u] == GRAY) {
                 setStart(u);
                 return true;
-            }
+            } 
         }
         color[v] = BLACK;
         return false;
@@ -124,47 +123,34 @@ public:
         }
     };
     
-    void dfsV2(uint v ) {
+    void dfsV2(uint v, uint add ) {
 
         if(color_2[v] == WHITE) {
             color_2[v] = GRAY;
             for(uint u: transpose[v]) {
                 u--;
                 if(color_2[u] == WHITE) 
-                    dfsV2(u);
+                    dfsV2(u,add);
                 else if(color_2[u] == BLACK) {
 
-                    // TO FIX
-
-                    std::vector<int> temp = adjacency_list[u];
-                    color_2[u] = ORANGE;
-                    u++; // valor real não index
-                    for(uint i: temp) {
-                        if(res.count(i) == 0){
-                            // does nothing.
-                        }
-
+                    std::vector<int> adj = adjacency_list[u];
+                    for(uint i: adj) {
+                        if(res.count(i) != 0) {
+                            add = 0;
+                            break;
+                        } 
+                        add = 1;    
                     }
-                    res.insert(u);
-                    u--;
-                    std::vector<int> temp = adjacency_list[u];
-                    for(uint i: temp) {
-                        if(res.count(i) == 0){
-                            // does nothing; 
-                        } else {
-                        
-                            u++;
-                            for(std::set<int>::iterator it = res.begin(); it != res.end(); ) {
-                                if((uint)*it == u)
-                                    res.erase(u);
-                            }
-                        }
+                    if(add) {
+                        color_2[u] = ORANGE;
+                        u++;
+                        res.insert(u);
                     }
-
                 }
             }
             color_2[v] = RED;
-        } 
+        }
+
     };
 
     void dfsV1(uint v) {
@@ -181,26 +167,23 @@ public:
 
     void allCommonAncestor() {
 
-        //all vertices are already marked as white (see dfs_Acyclic)
+       
         color_2.assign(n,WHITE);
         uint v1 = getVerticeOne() - 1;
         uint v2 = getVerticeTwo() - 1;
-      
-        
-        // perform a DFS on v1
+    
         dfsV1(v1);
 
-        // check if v1 has already passed the other
         if(color_2[v2] == BLACK)  {
-            std::cout << getVerticeTwo() << whitespace;
+            std::cout << getVerticeTwo() << whitespace << newline;
         } else {
-            std::cout << "aqui" ;
-            dfsV2(v2);
+            dfsV2(v2,1);
             if(res.empty()){
                 std::cout << "-" << newline; 
             } else {
                 for(std::set<int>::iterator i = res.begin(); i != res.end(); i++)
-                    std::cout << *i << whitespace;    
+                    std::cout << *i << whitespace; 
+                std::cout << newline;   
             }
         }
 
@@ -222,7 +205,6 @@ Graph process_input() {
     std::vector<std::vector<int>> adj_list(n);
     std::vector<std::vector<int>> transpose(n);
     
-    // process the m edges
     for(uint i = 0; i < m; i++) { 
         uint x, y; 
         std::cin >> x >> y;
