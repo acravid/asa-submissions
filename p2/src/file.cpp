@@ -24,7 +24,7 @@ private:
     std::vector<int> indegree;
     std::vector<std::vector<int>> adjacency_list;
     std::vector<std::vector<int>> transpose;
-    std::set<int,std::less<int>> res;
+    std::set<int> res;
     
 public:
                                                                                         // && an r-value reference
@@ -71,7 +71,7 @@ public:
 
         color[v] = GRAY;
         for(uint u: adjacency_list[v]) {
-            u--; // zero indexed vector
+            u--;
             if (color[u] == WHITE) {
                 if (dfsMarker(u))
                     return true;
@@ -103,7 +103,7 @@ public:
         return false;
     };
 
-    bool validIndegree(uint flag) {
+    bool validIndegree() {
 
         indegree.assign(n,0);       
         for(uint i = 0; i < n ; i++) {
@@ -150,7 +150,7 @@ public:
                         it = tmp;
                         break;
                     } else {
-                        // ?
+                        
                     }
                 }
                 ++it;
@@ -262,7 +262,7 @@ int main() {
 
     Graph g = process_input();
 
-    if(!g.dfsAcyclic() || !g.validIndegree(0)) {
+    if(!g.dfsAcyclic() || !g.validIndegree()) {
         g.invalidGenealogyTree();
     } else {
         g.allCommonAncestor();
