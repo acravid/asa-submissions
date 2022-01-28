@@ -126,36 +126,52 @@ public:
             std::cout << indegree[i] << newline;
         }
     };
+
+    void checkAndRemoveAncestorRelationship() {
+
+        std::set<int>::iterator it;
+        std::set<int>::iterator tmp;
+        std::vector<int> adj;
+       
+
+        it = res.begin();
+
+        for(;it != res.end();) {
+
+            adj = adjacency_list[(*it-1)];
+            if(adj.empty()) {
+                ++it;         
+            } else {
+                for(uint el: adj) {
+                    if(res.count(el) == 1) {
+                        tmp = it;
+                        ++tmp; 
+                        res.erase(it);
+                        it = tmp;
+                        break;
+                    } else {
+                        // ?
+                    }
+                }
+                ++it;
+                
+            }
+        }   
+    }
     
-    void dfsV2(uint v, uint remove) {
+    void dfsV2(uint v) {
 
         if(color_2[v] == WHITE) {
             color_2[v] = GRAY;
             for(uint u: transpose[v]) {
                 u--;
                 if(color_2[u] == WHITE) 
-                    dfsV2(u,remove);
+                    dfsV2(u);
                 else if(color_2[u] == BLACK) {
                     
                     color_2[u] = ORANGE;
                     u++;
                     res.insert(u);
-
-                    std::set<int>::iterator it;
-                    std::vector<int> adj;
-                    for (it = res.begin(); it != res.end(); ++it) {
-                        adj = adjacency_list[(*it-1)];
-                        for(uint i: adj) {
-                            if(res.count(i) == 1) {
-                                res.erase((*it));
-                                remove = 1;
-                                break;
-                            }
-                        }
-                        if(remove) {
-                            break;
-                        }
-                    }      
                 }
             }
             color_2[v] = RED;
@@ -184,17 +200,21 @@ public:
         uint v2 = getVerticeTwo() - 1;
     
         dfsV1(v1);
+     
 
 
         if(color_2[v2] == BLACK)  {
             std::cout << getVerticeTwo() << whitespace << newline;
         } 
         else {
-            dfsV2(v2,0);
+            dfsV2(v2);
     
             if(res.empty()){
                 std::cout << "-" << newline; 
             } else {
+
+      
+                checkAndRemoveAncestorRelationship();
                 for(std::set<int>::iterator i = res.begin(); i != res.end(); i++)
                     std::cout << *i << whitespace; 
                 std::cout << newline;   
