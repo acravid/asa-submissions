@@ -24,7 +24,7 @@ private:
     std::vector<int> indegree;
     std::vector<std::vector<int>> adjacency_list;
     std::vector<std::vector<int>> transpose;
-    std::set<int> res;
+    std::set<int,std::less<int>> res;
     
 public:
                                                                                         // && an r-value reference
@@ -127,21 +127,20 @@ public:
         }
     };
 
-    void checkAndRemoveAncestorRelationship() {
+    void checkAndRemoveAncestorRelationship(uint remove) {
 
         std::set<int>::iterator it;
         std::set<int>::iterator tmp;
         std::vector<int> adj;
-       
-
+    
         it = res.begin();
 
         for(;it != res.end();) {
-
             adj = adjacency_list[(*it-1)];
             if(adj.empty()) {
                 ++it;         
             } else {
+             
                 for(uint el: adj) {
                     if(res.count(el) == 1) {
                         tmp = it;
@@ -149,12 +148,9 @@ public:
                         res.erase(it);
                         it = tmp;
                         break;
-                    } else {
-                        
-                    }
+                    } 
                 }
-                ++it;
-                
+                ++it;                
             }
         }   
     }
@@ -200,8 +196,6 @@ public:
         uint v2 = getVerticeTwo() - 1;
     
         dfsV1(v1);
-     
-
 
         if(color_2[v2] == BLACK)  {
             std::cout << getVerticeTwo() << whitespace << newline;
@@ -214,7 +208,7 @@ public:
             } else {
 
       
-                checkAndRemoveAncestorRelationship();
+                checkAndRemoveAncestorRelationship(0);
                 for(std::set<int>::iterator i = res.begin(); i != res.end(); i++)
                     std::cout << *i << whitespace; 
                 std::cout << newline;   
