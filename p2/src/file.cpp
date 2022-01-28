@@ -127,7 +127,7 @@ public:
         }
     };
 
-    void checkAndRemoveAncestorRelationship(uint remove) {
+    void checkAndRemoveAncestorRelationship() {
 
         std::set<int>::iterator it;
         std::set<int>::iterator tmp;
@@ -206,9 +206,8 @@ public:
             if(res.empty()){
                 std::cout << "-" << newline; 
             } else {
+                checkAndRemoveAncestorRelationship();
 
-      
-                checkAndRemoveAncestorRelationship(0);
                 for(std::set<int>::iterator i = res.begin(); i != res.end(); i++)
                     std::cout << *i << whitespace; 
                 std::cout << newline;   
