@@ -1,4 +1,4 @@
-# asa
+# Analysis and Synthesis of Algorithms
 
 This repository contains my solutions to two separate problem sets regarding the curricular unit of Analysis and Synthesis of Algorithms @ Técnico Lisboa | ASA
 
